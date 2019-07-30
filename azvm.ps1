@@ -9,6 +9,7 @@ For ($i = 1; $i -le $nbVM; $i++)
   $vnetName = "$resourceGroup" + $i
   $pipName = "$resourceGroup" + $i
   $sgName = "$resourceGroup" + $i
+  $nicName = "$resourceGroup" + $i
 
   Write-Host "Creating VM: " $vmName
 
@@ -79,7 +80,7 @@ For ($i = 1; $i -le $nbVM; $i++)
 
   # Create a virtual network card and associate with public IP address and NSG
   $nic = New-AzNetworkInterface `
-    -Name "myNic" `
+    -Name $nicName `
     -ResourceGroupName $resourceGroup `
     -Location "EastUS" `
     -SubnetId $vnet.Subnets[0].Id `
@@ -118,11 +119,13 @@ For ($i = 1; $i -le $nbVM; $i++)
   New-AzVM `
   -ResourceGroupName $resourceGroup `
   -Location eastus -VM $vmConfig
-  Get-AzPublicIpAddress -ResourceGroupName $resourceGroup | Select "IpAddress"
 
   $pipaddress = (Get-AzPublicIpAddress -ResourceGroupName $resourceGroup | Select "IpAddress")
-  $serveraddress = ($pipaddress | sed -n '4p')
+  $n = $i + 3
+  $serveraddress = ($pipaddress | sed -n "$n p")
 
   ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no azureuser@$serveraddress "sudo apt update && sudo apt -y install git && git clone https://github.com/cgigto2019/auto-wordpress && cd auto-wordpress && sudo bash -x ./wordpress.sh"
   Write-Host "Please connect with ssh azureuser@$serveraddress or visit https://www.$serveraddress.nip.io/"
+}
+
 }
