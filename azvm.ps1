@@ -127,5 +127,3 @@ For ($i = 1; $i -le $nbVM; $i++)
   ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no azureuser@$serveraddress "sudo apt update && sudo apt -y install git && git clone https://github.com/cgigto2019/auto-wordpress && cd auto-wordpress && sudo bash -x ./wordpress.sh"
   Write-Host "Please connect with ssh azureuser@$serveraddress or visit https://www.$serveraddress.nip.io/"
 }
-
-}
